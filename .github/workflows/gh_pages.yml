@@ -1,0 +1,13 @@
+name: github pages
+
+on: [push, workflow_dispatch]
+
+jobs:
+    build:
+        runs-on: ubuntu-20.04
+
+        steps:
+            - uses: actions/checkout@v2
+
+            - name: Build github pages site
+              run: ./github_pages.sh
