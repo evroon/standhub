@@ -1,12 +1,19 @@
-import {AppShell, Navbar, MantineProvider} from '@mantine/core';
+import {
+    AppShell,
+    Navbar,
+    MantineProvider,
+    ColorSchemeProvider,
+    ColorScheme,
+} from '@mantine/core';
 import {NotificationsProvider} from '@mantine/notifications';
 import {useRef} from 'react';
 import {useState} from 'react';
 import Body from './components/body';
 import GHNavbar from './components/navbar';
 
-function App() {
-    const childFunc = useRef(null);
+export default function App() {
+    const setLoading = useRef(null);
+    const [showAllCards, setShowAllCards] = useState(false);
 
     const today = new Date();
     const yesterday = new Date();
@@ -15,32 +22,58 @@ function App() {
 
     const [dates, setDates] = useState<[Date, Date]>([yesterday, today]);
 
-    function setCalendarDates(value: [Date, Date]) {
-        if (childFunc.current !== null) {
-            childFunc.current(value);
+    function renderPage() {
+        if (setLoading.current !== null) {
+            setLoading.current(true);
         }
-        setDates(value);
     }
 
+    function setCalendarDates(selectedDates: any) {
+        if (selectedDates.constructor.name == 'Date') {
+            const dayAfter = new Date(selectedDates);
+            dayAfter.setDate(dayAfter.getDate() + 1);
+            setDates([selectedDates, selectedDates]);
+        } else {
+            setDates(selectedDates);
+        }
+        renderPage();
+    }
+
+    function setShowAllCardsAndReload(event: any) {
+        renderPage();
+        setShowAllCards(event.currentTarget.checked);
+    }
+    const [colorScheme, setColorScheme] = useState<ColorScheme>('dark');
+    const toggleColorScheme = (value?: ColorScheme) =>
+        setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
+
     return (
-        <MantineProvider theme={{colorScheme: 'dark'}} withGlobalStyles>
-            <NotificationsProvider>
-                <AppShell
-                    padding="md"
-                    navbar={
-                        <Navbar width={{base: 300}} p="xs">
-                            <GHNavbar
-                                dates={dates}
-                                setDates={setCalendarDates}
-                            />
-                        </Navbar>
-                    }
-                >
-                    <Body dates={dates} childFunc={childFunc} />
-                </AppShell>
-            </NotificationsProvider>
-        </MantineProvider>
+        <ColorSchemeProvider
+            colorScheme={colorScheme}
+            toggleColorScheme={toggleColorScheme}
+        >
+            <MantineProvider withGlobalStyles theme={{colorScheme}}>
+                <NotificationsProvider>
+                    <AppShell
+                        padding="md"
+                        navbar={
+                            <Navbar width={{base: 300}} p="xs">
+                                <GHNavbar
+                                    dates={dates}
+                                    setDates={setCalendarDates}
+                                    setShowAllCards={setShowAllCardsAndReload}
+                                />
+                            </Navbar>
+                        }
+                    >
+                        <Body
+                            dates={dates}
+                            setLoading={setLoading}
+                            showAllCards={showAllCards}
+                        />
+                    </AppShell>
+                </NotificationsProvider>
+            </MantineProvider>
+        </ColorSchemeProvider>
     );
 }
-
-export default App;

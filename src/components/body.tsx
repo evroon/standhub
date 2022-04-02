@@ -15,6 +15,7 @@ import {getNotifications} from '../adapter';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {solid, regular} from '@fortawesome/fontawesome-svg-core/import.macro';
 import {showNotification} from '@mantine/notifications';
+import {EmptyResults} from './empty_body';
 
 function getReasonColor(reason: string) {
     return {
@@ -23,6 +24,8 @@ function getReasonColor(reason: string) {
         team_mention: 'red',
         assign: 'green',
         subscribed: 'blue',
+        author: 'lime',
+        comment: 'indigo',
     }[reason];
 }
 
@@ -48,7 +51,6 @@ function stringToColour(str: string) {
 }
 
 function getAvatorForRepo(repository: GHNotificationRepository) {
-    console.log(repository.owner.avatar_url);
     return (
         <Avatar
             alt={repository.name}
@@ -159,7 +161,6 @@ function githubCard(row: GHNotification) {
                         </Text>
                         <Button<'a'>
                             component="a"
-                            variant="light"
                             color="indigo"
                             fullWidth
                             href={getIssueUrl(row.subject.url)}
@@ -178,20 +179,18 @@ export default function Body(props: any) {
     const [data, setData] = useState<GHNotification[]>([]);
 
     useEffect(() => {
-        props.childFunc.current = setLoading;
+        props.setLoading.current = setLoading;
     }, []);
 
     const fetchData = () => {
-        const today = new Date();
-        const yesterday = new Date();
-        today.setDate(today.getDate() - 0);
-        yesterday.setDate(yesterday.getDate() - 2);
-
-        const before = props.dates[1];
-        const since = props.dates[0];
+        const before = new Date(props.dates[1]);
+        const since = new Date(props.dates[0]);
+        if (before !== null) {
+            before.setDate(before.getDate() + 1);
+        }
 
         // Make a request for a user with a given ID
-        getNotifications(before, since)
+        getNotifications(before, since, props.showAllCards)
             .then(function (response: any) {
                 setData(response.data);
             })
@@ -209,7 +208,10 @@ export default function Body(props: any) {
         setLoading(false);
     }
 
-    const cards = data.map((row: GHNotification) => githubCard(row));
+    let content: any = data.map((row: GHNotification) => githubCard(row));
+    if (data.length < 1) {
+        content = <EmptyResults />;
+    }
 
-    return <Grid>{cards}</Grid>;
+    return <Grid>{content}</Grid>;
 }
