@@ -10,13 +10,18 @@ export const axiosGithub = axios.create({
     },
 });
 
-export function getNotifications(before: Date, since: Date) {
+export function getNotifications(
+    before: Date,
+    since: Date,
+    showAllCards: boolean,
+) {
     return axiosGithub.get('notifications', {
         params: {
             all: true,
             before: before,
             since: since ? since.toISOString() : null,
             per_page: 100,
+            participating: !showAllCards,
         },
     });
 }

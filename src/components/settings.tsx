@@ -4,7 +4,6 @@ import {getGHToken, setGHToken} from '../storage';
 
 export default function Settings() {
     const [settings, setSettings] = useState(() => {
-        console.log(getGHToken());
         return getGHToken();
     });
 
@@ -55,7 +54,7 @@ export default function Settings() {
                 </Button>
             </Modal>
 
-            <Button fullWidth onClick={() => setOpened(true)}>
+            <Button fullWidth onClick={() => setOpened(true)} color="blue">
                 Open Settings
             </Button>
         </>
