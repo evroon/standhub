@@ -10,8 +10,8 @@ function App() {
 
     const today = new Date();
     const yesterday = new Date();
-    today.setDate(today.getDate() - 1);
-    yesterday.setDate(yesterday.getDate() - 4);
+    today.setDate(today.getDate() - 0);
+    yesterday.setDate(yesterday.getDate() - 1);
 
     const [dates, setDates] = useState<[Date, Date]>([yesterday, today]);
 
