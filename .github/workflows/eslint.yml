@@ -3,14 +3,14 @@ name: eslint
 on: [push, workflow_dispatch]
 
 jobs:
-  build:
-    runs-on: ubuntu-20.04
+    build:
+        runs-on: ubuntu-20.04
 
-    steps:
-      - uses: actions/checkout@v2
+        steps:
+            - uses: actions/checkout@v2
 
-      - name: Install JS modules
-        run: yarn
+            - name: Install JS modules
+              run: yarn
 
-      - name: Run ESLint
-        run: eslint src --ext .js,.jsx,.ts,.tsx
+            - name: Run ESLint
+              run: yarn eslint src --ext .js,.jsx,.ts,.tsx

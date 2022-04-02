@@ -3,14 +3,14 @@ name: prettier
 on: [push, workflow_dispatch]
 
 jobs:
-  build:
-    runs-on: ubuntu-20.04
+    build:
+        runs-on: ubuntu-20.04
 
-    steps:
-      - uses: actions/checkout@v2
+        steps:
+            - uses: actions/checkout@v2
 
-      - name: Install JS modules
-        run: yarn
+            - name: Install JS modules
+              run: yarn
 
-      - name: Run prettier
-        run: prettier src/**/*{.ts,.tsx}
+            - name: Run prettier
+              run: yarn prettier --write .
