@@ -4,6 +4,10 @@ import {
     MantineProvider,
     ColorSchemeProvider,
     ColorScheme,
+    Header,
+    MediaQuery,
+    Burger,
+    useMantineTheme,
 } from '@mantine/core';
 import {NotificationsProvider} from '@mantine/notifications';
 import {useRef} from 'react';
@@ -26,6 +30,9 @@ export default function App() {
     const [search, setSearch] = useState('');
     const [colorScheme, setColorScheme] = useState<ColorScheme>('dark');
     const [data, setDataRaw] = useState<GHNotification[]>([]);
+    const [navBarOpened, setNavBarOpened] = useState(false);
+
+    const theme = useMantineTheme();
 
     function setData(data) {
         // Remove repos from the repo filter that are not in the current data
@@ -84,7 +91,12 @@ export default function App() {
                     <AppShell
                         padding="md"
                         navbar={
-                            <Navbar width={{base: 300}} p="xs">
+                            <Navbar
+                                p="md"
+                                hiddenBreakpoint="md"
+                                hidden={!navBarOpened}
+                                width={{md: 300}}
+                            >
                                 <GHNavbar
                                     dates={dates}
                                     setDates={setCalendarDates}
@@ -104,6 +116,34 @@ export default function App() {
                                     setRepoFilter={setRepoFilter}
                                 />
                             </Navbar>
+                        }
+                        header={
+                            <MediaQuery
+                                largerThan="md"
+                                styles={{display: 'none'}}
+                            >
+                                <Header height={70} p="md">
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            height: '100%',
+                                        }}
+                                    >
+                                        <Burger
+                                            opened={navBarOpened}
+                                            onClick={() =>
+                                                setNavBarOpened((o) => !o)
+                                            }
+                                            size="sm"
+                                            color={theme.colors.gray[6]}
+                                            mr="xl"
+                                        />
+
+                                        {/* <Text>Application header</Text> */}
+                                    </div>
+                                </Header>
+                            </MediaQuery>
                         }
                     >
                         <Body
