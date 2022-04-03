@@ -74,6 +74,13 @@ function getSwitches(data: SwitchesCardProps[]) {
     ));
 }
 
+function getCalendar(dates, setDates, selectMultipleDates) {
+    if (selectMultipleDates) {
+        return <RangeCalendar value={dates} onChange={setDates} />;
+    }
+    return <Calendar value={dates} onChange={setDates} />;
+}
+
 export default function GHNavbar(props: any) {
     const {classes} = useStyles();
     let dates = props.dates;
@@ -101,16 +108,9 @@ export default function GHNavbar(props: any) {
 
     return (
         <Group>
-            <RangeCalendar
-                value={dates}
-                onChange={props.setDates}
-                style={{display: props.selectMultipleDates ? '' : 'none'}}
-            />
-            <Calendar
-                value={dates}
-                onChange={props.setDates}
-                style={{display: !props.selectMultipleDates ? '' : 'none'}}
-            />
+            <Center>
+                {getCalendar(dates, props.setDates, props.selectMultipleDates)}
+            </Center>
             <div style={{width: '100%'}}>
                 <Button fullWidth variant="subtle" onClick={resetDates}>
                     Reset date
