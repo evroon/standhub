@@ -6,7 +6,7 @@ import App404 from './components/404';
 const RouterApp = () => (
     <BrowserRouter>
         <Routes>
-            <Route path="/" element={<App />} />
+            <Route path="/standhub" element={<App />} />
             <Route path="*" element={<App404 />} />
         </Routes>
     </BrowserRouter>
