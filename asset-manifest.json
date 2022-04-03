@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/standhub/static/js/main.44ca1bab.js",
+    "main.js": "/standhub/static/js/main.e3ccc34c.js",
     "index.html": "/standhub/index.html",
-    "main.44ca1bab.js.map": "/standhub/static/js/main.44ca1bab.js.map"
+    "main.e3ccc34c.js.map": "/standhub/static/js/main.e3ccc34c.js.map"
   },
   "entrypoints": [
-    "static/js/main.44ca1bab.js"
+    "static/js/main.e3ccc34c.js"
   ]
 }
