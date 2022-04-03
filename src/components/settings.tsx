@@ -1,5 +1,6 @@
 import {Button, Modal, PasswordInput, Text} from '@mantine/core';
 import {useState} from 'react';
+import {createAxios} from '../adapter';
 import {getGHToken, setGHToken} from '../storage';
 
 export default function Settings() {
@@ -11,6 +12,7 @@ export default function Settings() {
 
     function saveSettings() {
         setGHToken(settings);
+        createAxios();
     }
 
     return (
