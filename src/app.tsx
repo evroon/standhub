@@ -7,6 +7,7 @@ import {
     Header,
     MediaQuery,
     Burger,
+    Text,
     useMantineTheme,
 } from '@mantine/core';
 import {NotificationsProvider} from '@mantine/notifications';
@@ -140,7 +141,7 @@ export default function App() {
                                             mr="xl"
                                         />
 
-                                        {/* <Text>Application header</Text> */}
+                                        <Text>Standhub</Text>
                                     </div>
                                 </Header>
                             </MediaQuery>
