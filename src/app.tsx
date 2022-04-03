@@ -105,8 +105,12 @@ export default function App() {
                                     <GHNavbar
                                         dates={dates}
                                         setDates={setCalendarDates}
-                                        setShowAllCards={setShowAllCardsAndReload}
-                                        selectMultipleDates={selectMultipleDates}
+                                        setShowAllCards={
+                                            setShowAllCardsAndReload
+                                        }
+                                        selectMultipleDates={
+                                            selectMultipleDates
+                                        }
                                         setSelectMultipleDates={
                                             setSelectMultipleDatesAndReload
                                         }
@@ -145,7 +149,6 @@ export default function App() {
                                             color={theme.colors.gray[6]}
                                             mr="xl"
                                         />
-
                                     </MediaQuery>
                                     <Text>Standhub</Text>
                                 </div>
