@@ -5,7 +5,7 @@ import {getNotifications} from '../adapter';
 import {showNotification} from '@mantine/notifications';
 import {EmptyResults} from './empty_body';
 import githubCard from './card';
-import GHTable from './table';
+import GHTable, {RowData} from './table';
 import {getCardType, getIssueUrl} from './notification';
 
 function convertData(data: any) {
@@ -35,12 +35,44 @@ function filterData(data: any, search: string, repoFilter: string[]) {
     );
 }
 
+function sortData(
+    data: RowData[],
+    payload: {sortBy: string; reversed: boolean},
+) {
+    if (!payload.sortBy) {
+        return data;
+    }
+
+    return [...data].sort((a, b) => {
+        const compare = a[payload.sortBy].localeCompare(b[payload.sortBy], {
+            sensitivity: 'base',
+        });
+        return payload.reversed ? compare : 1 - compare;
+    });
+}
+
 export default function Body(props: any) {
     const [loading, setLoading] = useState(true);
+    const [sortBy, setSortBy] = useState<string>('title');
+    const [reverseSortDirection, setReverseSortDirection] = useState(true);
 
     useEffect(() => {
         props.setLoading.current = setLoading;
     }, []);
+
+    function sortDataAndReload(
+        newSortBy: string,
+        newReverseSortDirection: boolean,
+    ) {
+        setReverseSortDirection(newReverseSortDirection);
+        setSortBy(newSortBy);
+        props.setData(
+            sortData(props.data, {
+                sortBy: newSortBy,
+                reversed: newReverseSortDirection,
+            }),
+        );
+    }
 
     const fetchData = () => {
         props.setIsLoading(true);
@@ -55,7 +87,12 @@ export default function Body(props: any) {
         // Make a request for a user with a given ID
         getNotifications(before, since, props.showAllCards)
             .then(function (response: any) {
-                props.setData(convertData(response.data));
+                props.setData(
+                    sortData(convertData(response.data), {
+                        sortBy: sortBy,
+                        reversed: reverseSortDirection,
+                    }),
+                );
             })
             .catch(function (error: any) {
                 showNotification({
@@ -81,7 +118,15 @@ export default function Body(props: any) {
     if (filteredData.length === 0) {
         content = <EmptyResults />;
     } else if (props.viewType == 'table') {
-        content = <GHTable data={filteredData} setData={props.setData} />;
+        content = (
+            <GHTable
+                data={filteredData}
+                setData={props.setData}
+                sortBy={sortBy}
+                sortDataAndReload={sortDataAndReload}
+                reverseSortDirection={reverseSortDirection}
+            />
+        );
     } else {
         content = filteredData.map((row: GHNotification) => githubCard(row));
     }

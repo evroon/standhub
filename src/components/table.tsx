@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
     createStyles,
     Table,
@@ -34,7 +34,7 @@ const useStyles = createStyles((theme) => ({
     },
 }));
 
-interface RowData {
+export interface RowData {
     title: string;
     repositoryName: string;
     notificationType: string;
@@ -77,32 +77,11 @@ function Th({children, reversed, sorted, onSort}: ThProps) {
     );
 }
 
-function sortData(
-    data: RowData[],
-    payload: {sortBy: string; reversed: boolean},
-) {
-    if (!payload.sortBy) {
-        return data;
-    }
-
-    return [...data].sort((a, b) => {
-        const compare = a[payload.sortBy].localeCompare(b[payload.sortBy], {
-            sensitivity: 'base',
-        });
-        return payload.reversed ? compare : 1 - compare;
-    });
-}
-
 export default function GHTable(props: any) {
-    const [sortBy, setSortBy] = useState<string>('title');
-    const [reverseSortDirection, setReverseSortDirection] = useState(false);
-
     const setSorting = (field: string) => {
-        const reversed = field === sortBy ? !reverseSortDirection : false;
-        setReverseSortDirection(reversed);
-        setSortBy(field);
-
-        props.setData(sortData(props.data, {sortBy: field, reversed}));
+        const reversed =
+            field === props.sortBy ? !props.reverseSortDirection : true;
+        props.sortDataAndReload(field, reversed);
     };
 
     const rows = props.data.map((row) => (
@@ -135,8 +114,8 @@ export default function GHTable(props: any) {
                 <thead>
                     <tr>
                         <Th
-                            sorted={sortBy === 'title'}
-                            reversed={reverseSortDirection}
+                            sorted={props.sortBy === 'title'}
+                            reversed={props.reverseSortDirection}
                             onSort={() => setSorting('title')}
                         >
                             <FontAwesomeIcon
@@ -146,8 +125,8 @@ export default function GHTable(props: any) {
                             Title
                         </Th>
                         <Th
-                            sorted={sortBy === 'repositoryName'}
-                            reversed={reverseSortDirection}
+                            sorted={props.sortBy === 'repositoryName'}
+                            reversed={props.reverseSortDirection}
                             onSort={() => setSorting('repositoryName')}
                         >
                             <FontAwesomeIcon
@@ -157,8 +136,8 @@ export default function GHTable(props: any) {
                             Repository
                         </Th>
                         <Th
-                            sorted={sortBy === 'reason'}
-                            reversed={reverseSortDirection}
+                            sorted={props.sortBy === 'reason'}
+                            reversed={props.reverseSortDirection}
                             onSort={() => setSorting('reason')}
                         >
                             <FontAwesomeIcon
@@ -168,8 +147,8 @@ export default function GHTable(props: any) {
                             Reason
                         </Th>
                         <Th
-                            sorted={sortBy === 'lastUpdated'}
-                            reversed={reverseSortDirection}
+                            sorted={props.sortBy === 'lastUpdated'}
+                            reversed={props.reverseSortDirection}
                             onSort={() => setSorting('lastUpdated')}
                         >
                             <FontAwesomeIcon
