@@ -24,8 +24,8 @@ export default function githubCard(row: any) {
     }
     const theme = useMantineTheme();
     return (
-        <Grid.Col xs={12} md={6} lg={3} xl={2} key={row.id}>
-            <Card shadow="sm" p="lg" style={{minHeight: 250}}>
+        <Grid.Col xs={12} md={6} lg={4} xl={2} key={row.id}>
+            <Card shadow="sm" p="lg" style={{minHeight: 300}}>
                 <Grid justify="center" align="flex-end">
                     <Grid.Col span={12}>
                         <div>
