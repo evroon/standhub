@@ -9,6 +9,7 @@ import {
     Burger,
     Text,
     useMantineTheme,
+    ScrollArea,
 } from '@mantine/core';
 import {NotificationsProvider} from '@mantine/notifications';
 import {useRef} from 'react';
@@ -91,45 +92,49 @@ export default function App() {
                 <NotificationsProvider>
                     <AppShell
                         padding="md"
+                        navbarOffsetBreakpoint="sm"
+                        fixed
                         navbar={
                             <Navbar
                                 p="md"
-                                hiddenBreakpoint="md"
+                                hiddenBreakpoint="sm"
                                 hidden={!navBarOpened}
-                                width={{md: 300}}
+                                width={{sm: 300, lg: 300}}
                             >
-                                <GHNavbar
-                                    dates={dates}
-                                    setDates={setCalendarDates}
-                                    setShowAllCards={setShowAllCardsAndReload}
-                                    selectMultipleDates={selectMultipleDates}
-                                    setSelectMultipleDates={
-                                        setSelectMultipleDatesAndReload
-                                    }
-                                    viewType={viewType}
-                                    setViewType={setViewType}
-                                    search={search}
-                                    setSearch={setSearchAndReload}
-                                    isLoading={isLoading}
-                                    renderPage={renderPage}
-                                    data={data}
-                                    repoFilter={repoFilter}
-                                    setRepoFilter={setRepoFilter}
-                                />
+                                <ScrollArea offsetScrollbars={true}>
+                                    <GHNavbar
+                                        dates={dates}
+                                        setDates={setCalendarDates}
+                                        setShowAllCards={setShowAllCardsAndReload}
+                                        selectMultipleDates={selectMultipleDates}
+                                        setSelectMultipleDates={
+                                            setSelectMultipleDatesAndReload
+                                        }
+                                        viewType={viewType}
+                                        setViewType={setViewType}
+                                        search={search}
+                                        setSearch={setSearchAndReload}
+                                        isLoading={isLoading}
+                                        renderPage={renderPage}
+                                        data={data}
+                                        repoFilter={repoFilter}
+                                        setRepoFilter={setRepoFilter}
+                                    />
+                                </ScrollArea>
                             </Navbar>
                         }
                         header={
-                            <MediaQuery
-                                largerThan="md"
-                                styles={{display: 'none'}}
-                            >
-                                <Header height={70} p="md">
-                                    <div
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            height: '100%',
-                                        }}
+                            <Header height={70} p="md">
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        height: '100%',
+                                    }}
+                                >
+                                    <MediaQuery
+                                        largerThan="md"
+                                        styles={{display: 'none'}}
                                     >
                                         <Burger
                                             opened={navBarOpened}
@@ -141,10 +146,10 @@ export default function App() {
                                             mr="xl"
                                         />
 
-                                        <Text>Standhub</Text>
-                                    </div>
-                                </Header>
-                            </MediaQuery>
+                                    </MediaQuery>
+                                    <Text>Standhub</Text>
+                                </div>
+                            </Header>
                         }
                     >
                         <Body
