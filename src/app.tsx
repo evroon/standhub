@@ -10,17 +10,18 @@ import {useRef} from 'react';
 import {useState} from 'react';
 import Body from './components/body';
 import GHNavbar from './components/navbar';
+import {getDefaultTimeRange} from './components/util';
 
 export default function App() {
     const setLoading = useRef(null);
     const [showAllCards, setShowAllCards] = useState(false);
+    const [viewType, setViewType] = useState('cards');
 
-    const today = new Date();
-    const yesterday = new Date();
-    today.setDate(today.getDate() - 0);
-    yesterday.setDate(yesterday.getDate() - 1);
-
+    const [selectMultipleDates, setSelectMultipleDates] = useState(false);
+    const [yesterday, today] = getDefaultTimeRange(selectMultipleDates);
     const [dates, setDates] = useState<[Date, Date]>([yesterday, today]);
+
+    const [colorScheme, setColorScheme] = useState<ColorScheme>('dark');
 
     function renderPage() {
         if (setLoading.current !== null) {
@@ -40,10 +41,21 @@ export default function App() {
     }
 
     function setShowAllCardsAndReload(event: any) {
-        renderPage();
         setShowAllCards(event.currentTarget.checked);
+        renderPage();
     }
-    const [colorScheme, setColorScheme] = useState<ColorScheme>('dark');
+
+    function setSelectMultipleDatesAndReload(event: any) {
+        setSelectMultipleDates(event.currentTarget.checked);
+
+        if (!event.currentTarget.checked) {
+            const max = new Date(dates[0]);
+            max.setDate(dates[0].getDate() + 0);
+            setDates([dates[0], max]);
+        }
+        renderPage();
+    }
+
     const toggleColorScheme = (value?: ColorScheme) =>
         setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
 
@@ -62,6 +74,12 @@ export default function App() {
                                     dates={dates}
                                     setDates={setCalendarDates}
                                     setShowAllCards={setShowAllCardsAndReload}
+                                    selectMultipleDates={selectMultipleDates}
+                                    setSelectMultipleDates={
+                                        setSelectMultipleDatesAndReload
+                                    }
+                                    viewType={viewType}
+                                    setViewType={setViewType}
                                 />
                             </Navbar>
                         }
@@ -70,6 +88,8 @@ export default function App() {
                             dates={dates}
                             setLoading={setLoading}
                             showAllCards={showAllCards}
+                            selectMultipleDates={selectMultipleDates}
+                            viewType={viewType}
                         />
                     </AppShell>
                 </NotificationsProvider>

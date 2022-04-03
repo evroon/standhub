@@ -1,13 +1,7 @@
 import React from 'react';
-import {
-    createStyles,
-    Title,
-    Text,
-    Button,
-    Container,
-    Group,
-} from '@mantine/core';
-import getItemColor from './util';
+import {createStyles, Title, Text, Container, Group} from '@mantine/core';
+import Settings from './settings';
+import {getItemColor} from './util';
 
 const useStyles = createStyles((theme) => ({
     root: {
@@ -64,9 +58,7 @@ export function EmptyResults() {
                 access token and check the filter in the sidebar.
             </Text>
             <Group position="center">
-                <Button variant="subtle" size="md">
-                    Show settings
-                </Button>
+                <Settings />
             </Group>
         </Container>
     );

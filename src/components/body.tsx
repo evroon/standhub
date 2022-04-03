@@ -5,6 +5,7 @@ import {getNotifications} from '../adapter';
 import {showNotification} from '@mantine/notifications';
 import {EmptyResults} from './empty_body';
 import githubCard from './card';
+import GHTable from './table';
 
 export default function Body(props: any) {
     const [loading, setLoading] = useState(true);
@@ -17,6 +18,8 @@ export default function Body(props: any) {
     const fetchData = () => {
         const before = new Date(props.dates[1]);
         const since = new Date(props.dates[0]);
+
+        // We want to include the last day selected.
         if (before !== null) {
             before.setDate(before.getDate() + 1);
         }
@@ -45,5 +48,13 @@ export default function Body(props: any) {
         content = <EmptyResults />;
     }
 
-    return <Grid>{content}</Grid>;
+    if (props.viewType == 'cards') {
+        return <Grid>{content}</Grid>;
+    }
+
+    return (
+        <Grid>
+            <GHTable data={data} />
+        </Grid>
+    );
 }

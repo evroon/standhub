@@ -2,6 +2,7 @@ import {solid} from '@fortawesome/fontawesome-svg-core/import.macro';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {
     Box,
+    Button,
     Center,
     createStyles,
     Group,
@@ -10,10 +11,9 @@ import {
     Text,
 } from '@mantine/core';
 import {Calendar, RangeCalendar} from '@mantine/dates';
-import {useState} from 'react';
 import Settings from './settings';
 import LightDarkSwitch from './theme_switch';
-import getItemColor from './util';
+import {getDefaultTimeRange, getItemColor} from './util';
 
 const useStyles = createStyles((theme) => ({
     card: {
@@ -74,18 +74,17 @@ function getSwitches(data: SwitchesCardProps[]) {
 
 export default function GHNavbar(props: any) {
     const {classes} = useStyles();
-    const [selectMultipleDates, setSelectMultipleDates] = useState(false);
-
-    function onCalendarTypeChange(event: any) {
-        setSelectMultipleDates(event.currentTarget.checked);
-    }
     let dates = props.dates;
+
+    function resetDates() {
+        props.setDates(getDefaultTimeRange(props.selectMultipleDates));
+    }
 
     const data = [
         {
             title: 'Select multiple dates',
             description: 'Shows cards for more than one day',
-            onSwitchChange: onCalendarTypeChange,
+            onSwitchChange: props.setSelectMultipleDates,
         },
         {
             title: 'Show all cards',
@@ -94,7 +93,7 @@ export default function GHNavbar(props: any) {
         },
     ];
 
-    if (dates.constructor.name == 'Array' && !selectMultipleDates) {
+    if (dates.constructor.name == 'Array' && !props.selectMultipleDates) {
         dates = props.dates[0];
     }
 
@@ -103,14 +102,17 @@ export default function GHNavbar(props: any) {
             <RangeCalendar
                 value={dates}
                 onChange={props.setDates}
-                style={{display: selectMultipleDates ? '' : 'none'}}
+                style={{display: props.selectMultipleDates ? '' : 'none'}}
             />
             <Calendar
                 value={dates}
                 onChange={props.setDates}
-                style={{display: !selectMultipleDates ? '' : 'none'}}
+                style={{display: !props.selectMultipleDates ? '' : 'none'}}
             />
             <div style={{width: '100%'}}>
+                <Button fullWidth variant="subtle" onClick={resetDates}>
+                    Reset date
+                </Button>
                 <Text weight={700} style={{marginTop: 12, marginBottom: 8}}>
                     Options
                 </Text>
@@ -121,6 +123,8 @@ export default function GHNavbar(props: any) {
                 <SegmentedControl
                     style={{marginTop: 10}}
                     className={classes.switch}
+                    value={props.viewType}
+                    onChange={props.setViewType}
                     data={[
                         {
                             value: 'table',
@@ -150,6 +154,9 @@ export default function GHNavbar(props: any) {
                 />
                 <LightDarkSwitch />
             </div>
+            <Button fullWidth loading={false}>
+                Refresh
+            </Button>
             <Settings />
         </Group>
     );

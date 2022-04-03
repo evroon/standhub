@@ -54,8 +54,14 @@ export default function Settings() {
                 </Button>
             </Modal>
 
-            <Button fullWidth onClick={() => setOpened(true)} color="blue">
-                Open Settings
+            <Button
+                variant="subtle"
+                size="md"
+                fullWidth
+                onClick={() => setOpened(true)}
+                color="blue"
+            >
+                Settings
             </Button>
         </>
     );
