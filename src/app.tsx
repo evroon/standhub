@@ -11,17 +11,21 @@ import {useState} from 'react';
 import Body from './components/body';
 import GHNavbar from './components/navbar';
 import {getDefaultTimeRange} from './components/util';
+import {GHNotification} from './interfaces';
 
 export default function App() {
     const setLoading = useRef(null);
     const [showAllCards, setShowAllCards] = useState(false);
+    const [repoFilter, setRepoFilter] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const [viewType, setViewType] = useState('cards');
 
     const [selectMultipleDates, setSelectMultipleDates] = useState(false);
     const [yesterday, today] = getDefaultTimeRange(selectMultipleDates);
     const [dates, setDates] = useState<[Date, Date]>([yesterday, today]);
-
+    const [search, setSearch] = useState('');
     const [colorScheme, setColorScheme] = useState<ColorScheme>('dark');
+    const [data, setData] = useState<GHNotification[]>([]);
 
     function renderPage() {
         if (setLoading.current !== null) {
@@ -56,6 +60,14 @@ export default function App() {
         renderPage();
     }
 
+    function setSearchAndReload(event: any) {
+        setSearch(event.currentTarget.value);
+    }
+
+    function setRepoFilterAndReload(event: any) {
+        setRepoFilter(event);
+    }
+
     const toggleColorScheme = (value?: ColorScheme) =>
         setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
 
@@ -80,6 +92,13 @@ export default function App() {
                                     }
                                     viewType={viewType}
                                     setViewType={setViewType}
+                                    search={search}
+                                    setSearch={setSearchAndReload}
+                                    isLoading={isLoading}
+                                    renderPage={renderPage}
+                                    data={data}
+                                    repoFilter={repoFilter}
+                                    setRepoFilter={setRepoFilterAndReload}
                                 />
                             </Navbar>
                         }
@@ -90,6 +109,11 @@ export default function App() {
                             showAllCards={showAllCards}
                             selectMultipleDates={selectMultipleDates}
                             viewType={viewType}
+                            search={search}
+                            setIsLoading={setIsLoading}
+                            data={data}
+                            setData={setData}
+                            repoFilter={repoFilter}
                         />
                     </AppShell>
                 </NotificationsProvider>

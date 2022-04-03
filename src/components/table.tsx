@@ -6,13 +6,13 @@ import {
     UnstyledButton,
     Group,
     Text,
-    TextInput,
+    Center,
+    Anchor,
 } from '@mantine/core';
 import {getItemColor} from './util';
-import {GHNotification} from '../interfaces';
-import {getCardType, getFAIcon, ReasonBadge, RepoBadge} from './notification';
+import {getFAIcon, ReasonBadge, RepoBadge} from './notification';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {regular} from '@fortawesome/fontawesome-svg-core/import.macro';
+import {regular, solid} from '@fortawesome/fontawesome-svg-core/import.macro';
 
 const useStyles = createStyles((theme) => ({
     th: {
@@ -50,6 +50,15 @@ interface ThProps {
     onSort(): void;
 }
 
+function getSortIcon(sorted: boolean, reversed: boolean) {
+    if (!sorted) {
+        return <FontAwesomeIcon icon={solid('sort')} />;
+    } else if (reversed) {
+        return <FontAwesomeIcon icon={solid('sort-up')} />;
+    }
+    return <FontAwesomeIcon icon={solid('sort-down')} />;
+}
+
 function Th({children, reversed, sorted, onSort}: ThProps) {
     const {classes} = useStyles();
     return (
@@ -59,90 +68,56 @@ function Th({children, reversed, sorted, onSort}: ThProps) {
                     <Text weight={500} size="sm">
                         {children}
                     </Text>
+                    <Center className={classes.icon}>
+                        {getSortIcon(sorted, reversed)}
+                    </Center>
                 </Group>
             </UnstyledButton>
         </th>
     );
 }
 
-function filterData(data: RowData[], search: string) {
-    const keys = Object.keys(data[0]);
-    const query = search.toLowerCase().trim();
-    return data.filter((item) =>
-        keys.some((key) => item[key].toLowerCase().includes(query)),
-    );
-}
-
 function sortData(
     data: RowData[],
-    payload: {sortBy: keyof RowData; reversed: boolean; search: string},
+    payload: {sortBy: string; reversed: boolean},
 ) {
     if (!payload.sortBy) {
-        return filterData(data, payload.search);
+        return data;
     }
 
-    return filterData(
-        [...data].sort((a, b) => {
-            if (payload.reversed) {
-                return b[payload.sortBy].localeCompare(a[payload.sortBy]);
-            }
-
-            return a[payload.sortBy].localeCompare(b[payload.sortBy]);
-        }),
-        payload.search,
-    );
+    return [...data].sort((a, b) => {
+        const compare = a[payload.sortBy].localeCompare(b[payload.sortBy], {
+            sensitivity: 'base',
+        });
+        return payload.reversed ? compare : 1 - compare;
+    });
 }
 
 export default function GHTable(props: any) {
-    const notifications: GHNotification[] = props.data;
-
-    const data: any = notifications.map((notification) => {
-        return {
-            title: notification.subject.title,
-            repositoryName: notification.repository.name,
-            lastUpdated: new Date(notification.last_read_at).toLocaleString(),
-            notificationType: getCardType(notification.subject.url),
-            rawNotification: notification,
-            reason: notification.reason,
-        };
-    });
-
-    const [search, setSearch] = useState('');
-    const [sortedData, setSortedData] = useState(data);
-    const [sortBy, setSortBy] = useState<keyof RowData>(null);
+    const [sortBy, setSortBy] = useState<string>('title');
     const [reverseSortDirection, setReverseSortDirection] = useState(false);
 
-    const setSorting = (field: keyof RowData) => {
+    const setSorting = (field: string) => {
         const reversed = field === sortBy ? !reverseSortDirection : false;
         setReverseSortDirection(reversed);
         setSortBy(field);
-        setSortedData(sortData(data, {sortBy: field, reversed, search}));
+
+        props.setData(sortData(props.data, {sortBy: field, reversed}));
     };
 
-    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const {value} = event.currentTarget;
-        setSearch(value);
-        setSortedData(
-            sortData(data, {
-                sortBy,
-                reversed: reverseSortDirection,
-                search: value,
-            }),
-        );
-    };
-
-    const rows = sortedData.map((row) => (
-        <tr key={row.name}>
+    const rows = props.data.map((row) => (
+        <tr key={row.title}>
             <td>
-                <Text lineClamp={1} size="sm">
-                    {getFAIcon(row.notificationType)} {row.title}
-                </Text>
+                <Anchor<'a'> href={row.notificationUrl} lineClamp={1} size="sm">
+                    {getFAIcon(row.notificationType)}
+                    {row.title}
+                </Anchor>
             </td>
             <td>
-                <RepoBadge notification={row.rawNotification} />
+                <RepoBadge notification={row} />
             </td>
             <td>
-                <ReasonBadge notification={row.rawNotification} />
+                <ReasonBadge notification={row} />
             </td>
             <td>{row.lastUpdated}</td>
         </tr>
@@ -150,15 +125,11 @@ export default function GHTable(props: any) {
 
     return (
         <ScrollArea>
-            <TextInput
-                placeholder="Search by any field"
-                mb="md"
-                value={search}
-                onChange={handleSearchChange}
-            />
             <Table
                 horizontalSpacing="md"
                 verticalSpacing="xs"
+                striped
+                highlightOnHover
                 sx={{tableLayout: 'fixed', minWidth: 700}}
             >
                 <thead>

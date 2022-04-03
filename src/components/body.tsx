@@ -6,16 +6,44 @@ import {showNotification} from '@mantine/notifications';
 import {EmptyResults} from './empty_body';
 import githubCard from './card';
 import GHTable from './table';
+import {getCardType, getIssueUrl} from './notification';
+
+function convertData(data: any) {
+    return data.map((notification) => {
+        if (notification.reason === 'ci_activity') return null;
+        return {
+            title: notification.subject.title,
+            repositoryName: notification.repository.name,
+            lastUpdated: new Date(notification.last_read_at).toLocaleString(),
+            notificationType: getCardType(notification.subject.url),
+            notificationUrl: getIssueUrl(notification.subject.url),
+            rawNotification: notification,
+            ownerAvatarUrl: notification.repository.owner.avatar_url,
+            reason: notification.reason,
+        };
+    });
+}
+
+function filterData(data: any, search: string, repoFilter: string[]) {
+    return data.filter(
+        (notification) =>
+            notification.title
+                .toLowerCase()
+                .includes(search.trim().toLowerCase()) &&
+            (repoFilter.length === 0 ||
+                repoFilter.includes(notification.repositoryName)),
+    );
+}
 
 export default function Body(props: any) {
     const [loading, setLoading] = useState(true);
-    const [data, setData] = useState<GHNotification[]>([]);
 
     useEffect(() => {
         props.setLoading.current = setLoading;
     }, []);
 
     const fetchData = () => {
+        props.setIsLoading(true);
         const before = new Date(props.dates[1]);
         const since = new Date(props.dates[0]);
 
@@ -27,14 +55,18 @@ export default function Body(props: any) {
         // Make a request for a user with a given ID
         getNotifications(before, since, props.showAllCards)
             .then(function (response: any) {
-                setData(response.data);
+                props.setData(convertData(response.data));
             })
             .catch(function (error: any) {
                 showNotification({
                     title: 'Error occurred',
-                    message: 'An error occurred while connecting to Github',
+                    message:
+                        'An error occurred while connecting to Github' + error,
                     color: 'red',
                 });
+            })
+            .then(function () {
+                props.setIsLoading(false);
             });
     };
 
@@ -43,18 +75,16 @@ export default function Body(props: any) {
         setLoading(false);
     }
 
-    let content: any = data.map((row: GHNotification) => githubCard(row));
-    if (data.length < 1) {
+    const filteredData = filterData(props.data, props.search, props.repoFilter);
+    let content: any;
+
+    if (filteredData.length === 0) {
         content = <EmptyResults />;
+    } else if (props.viewType == 'table') {
+        content = <GHTable data={filteredData} setData={props.setData} />;
+    } else {
+        content = filteredData.map((row: GHNotification) => githubCard(row));
     }
 
-    if (props.viewType == 'cards') {
-        return <Grid>{content}</Grid>;
-    }
-
-    return (
-        <Grid>
-            <GHTable data={data} />
-        </Grid>
-    );
+    return <Grid>{content}</Grid>;
 }

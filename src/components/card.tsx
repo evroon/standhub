@@ -7,24 +7,18 @@ import {
     Group,
     Divider,
 } from '@mantine/core';
-import {GHNotification} from '../interfaces';
+// import {GHNotification} from '../interfaces';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {regular} from '@fortawesome/fontawesome-svg-core/import.macro';
 import {
     getCardType,
     getFAIcon,
+    getIssueUrl,
     ReasonBadge,
     RepoBadge,
 } from './notification';
 
-function getIssueUrl(issueApiUrl: string) {
-    return issueApiUrl
-        .replace('api.', '')
-        .replace('repos/', '')
-        .replace('pulls', 'pull');
-}
-
-export default function githubCard(row: GHNotification) {
+export default function githubCard(row: any) {
     if (row.reason === 'ci_activity') {
         return;
     }
@@ -36,8 +30,8 @@ export default function githubCard(row: GHNotification) {
                     <Grid.Col span={12}>
                         <div>
                             <Text lineClamp={4} weight={500}>
-                                {getFAIcon(row.subject.url)}
-                                {row.subject.title}
+                                {getFAIcon(row.notificationUrl)}
+                                {row.title}
                             </Text>
                         </div>
                         <Group
@@ -66,15 +60,17 @@ export default function githubCard(row: GHNotification) {
                                 style={{marginRight: 5}}
                             />
                             Last updated:{' '}
-                            {new Date(row.last_read_at).toLocaleString()}
+                            {new Date(
+                                row.rawNotification.last_read_at,
+                            ).toLocaleString()}
                         </Text>
                         <Button<'a'>
                             component="a"
                             color="indigo"
                             fullWidth
-                            href={getIssueUrl(row.subject.url)}
+                            href={getIssueUrl(row.notificationUrl)}
                         >
-                            View {getCardType(row.subject.url)}
+                            View {getCardType(row.notificationUrl)}
                         </Button>
                     </Grid.Col>
                 </Grid>

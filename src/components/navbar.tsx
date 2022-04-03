@@ -6,9 +6,11 @@ import {
     Center,
     createStyles,
     Group,
+    MultiSelect,
     SegmentedControl,
     Switch,
     Text,
+    TextInput,
 } from '@mantine/core';
 import {Calendar, RangeCalendar} from '@mantine/dates';
 import Settings from './settings';
@@ -43,6 +45,22 @@ interface SwitchesCardProps {
     title: string;
     description: string;
     onSwitchChange: any;
+}
+
+function onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+}
+
+function getRepoSelectData(data) {
+    return data
+        .map((row) => row.repositoryName)
+        .filter(onlyUnique)
+        .map((row) => {
+            return {
+                label: row,
+                value: row.toLowerCase(),
+            };
+        });
 }
 
 function getSwitches(data: SwitchesCardProps[]) {
@@ -80,7 +98,7 @@ export default function GHNavbar(props: any) {
         props.setDates(getDefaultTimeRange(props.selectMultipleDates));
     }
 
-    const data = [
+    const switchesConfig = [
         {
             title: 'Select multiple dates',
             description: 'Shows cards for more than one day',
@@ -116,7 +134,7 @@ export default function GHNavbar(props: any) {
                 <Text weight={700} style={{marginTop: 12, marginBottom: 8}}>
                     Options
                 </Text>
-                {getSwitches(data)}
+                {getSwitches(switchesConfig)}
                 <Text weight={700} style={{marginTop: 24}}>
                     View
                 </Text>
@@ -154,7 +172,35 @@ export default function GHNavbar(props: any) {
                 />
                 <LightDarkSwitch />
             </div>
-            <Button fullWidth loading={false}>
+            <Text weight={700} style={{marginTop: 0}}>
+                Filter
+            </Text>
+            <TextInput
+                placeholder="Search by title"
+                label="Search"
+                mb="md"
+                style={{width: '100%', marginBottom: 0}}
+                onChange={props.setSearch}
+                icon={
+                    <FontAwesomeIcon
+                        icon={solid('search')}
+                        style={{marginRight: 5}}
+                    />
+                }
+            />
+            <MultiSelect
+                data={getRepoSelectData(props.data)}
+                label="Repositories"
+                placeholder="Filter on repositories"
+                style={{width: '100%'}}
+                value={props.repoFilter}
+                onChange={props.setRepoFilter}
+            />
+            <Button
+                fullWidth
+                loading={props.isLoading}
+                onClick={props.renderPage}
+            >
                 Refresh
             </Button>
             <Settings />
