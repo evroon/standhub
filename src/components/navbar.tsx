@@ -15,7 +15,7 @@ import {
 import {Calendar, RangeCalendar} from '@mantine/dates';
 import Settings from './settings';
 import LightDarkSwitch from './theme_switch';
-import {getDefaultTimeRange, getItemColor} from './util';
+import {getDefaultTimeRange, getItemColor, getRepoSelectData} from './util';
 
 const useStyles = createStyles((theme) => ({
     card: {
@@ -45,22 +45,6 @@ interface SwitchesCardProps {
     title: string;
     description: string;
     onSwitchChange: any;
-}
-
-function onlyUnique(value, index, self) {
-    return self.indexOf(value) === index;
-}
-
-function getRepoSelectData(data) {
-    return data
-        .map((row) => row.repositoryName)
-        .filter(onlyUnique)
-        .map((row) => {
-            return {
-                label: row,
-                value: row.toLowerCase(),
-            };
-        });
 }
 
 function getSwitches(data: SwitchesCardProps[]) {

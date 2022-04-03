@@ -25,7 +25,14 @@ export default function App() {
     const [dates, setDates] = useState<[Date, Date]>([yesterday, today]);
     const [search, setSearch] = useState('');
     const [colorScheme, setColorScheme] = useState<ColorScheme>('dark');
-    const [data, setData] = useState<GHNotification[]>([]);
+    const [data, setDataRaw] = useState<GHNotification[]>([]);
+
+    function setData(data) {
+        // Remove repos from the repo filter that are not in the current data
+        const repos = data.map((row) => row.repositoryName);
+        setRepoFilter(repoFilter.filter((repo) => repos.includes(repo)));
+        setDataRaw(data);
+    }
 
     function renderPage() {
         if (setLoading.current !== null) {
@@ -64,10 +71,6 @@ export default function App() {
         setSearch(event.currentTarget.value);
     }
 
-    function setRepoFilterAndReload(event: any) {
-        setRepoFilter(event);
-    }
-
     const toggleColorScheme = (value?: ColorScheme) =>
         setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
 
@@ -98,7 +101,7 @@ export default function App() {
                                     renderPage={renderPage}
                                     data={data}
                                     repoFilter={repoFilter}
-                                    setRepoFilter={setRepoFilterAndReload}
+                                    setRepoFilter={setRepoFilter}
                                 />
                             </Navbar>
                         }

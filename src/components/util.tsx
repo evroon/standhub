@@ -28,3 +28,19 @@ export function getDefaultTimeRange(selectMultipleDates: boolean) {
 
     return [minDate, maxDate];
 }
+
+export function onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+}
+
+export function getRepoSelectData(data) {
+    return data
+        .map((row) => row.repositoryName)
+        .filter(onlyUnique)
+        .map((row) => {
+            return {
+                label: row,
+                value: row.toLowerCase(),
+            };
+        });
+}
