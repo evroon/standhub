@@ -101,7 +101,12 @@ export default function App() {
                                 hidden={!navBarOpened}
                                 width={{sm: 300, lg: 300}}
                             >
-                                <ScrollArea offsetScrollbars={true}>
+                                <ScrollArea
+                                    type="scroll"
+                                    offsetScrollbars={true}
+                                    style={{paddingRight: 12, marginRight: -12}}
+                                    scrollbarSize={6}
+                                >
                                     <GHNavbar
                                         dates={dates}
                                         setDates={setCalendarDates}
