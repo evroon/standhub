@@ -73,7 +73,7 @@ export default function App404() {
                         color="indigo"
                         variant="subtle"
                         size="md"
-                        href="https://evroon.github.io/standhub"
+                        href={process.env.PUBLIC_URL}
                     >
                         Take me back to home page
                     </Button>
