@@ -1,5 +1,6 @@
 import {Button, Modal, PasswordInput, Text} from '@mantine/core';
 import {useState} from 'react';
+import {createAxios} from '../adapter';
 import {getGHToken, setGHToken} from '../storage';
 
 export default function Settings() {
@@ -11,6 +12,7 @@ export default function Settings() {
 
     function saveSettings() {
         setGHToken(settings);
+        createAxios();
     }
 
     return (
@@ -54,8 +56,14 @@ export default function Settings() {
                 </Button>
             </Modal>
 
-            <Button fullWidth onClick={() => setOpened(true)} color="blue">
-                Open Settings
+            <Button
+                variant="subtle"
+                size="md"
+                fullWidth
+                onClick={() => setOpened(true)}
+                color="blue"
+            >
+                Settings
             </Button>
         </>
     );

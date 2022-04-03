@@ -2,20 +2,22 @@ import {getGHToken} from './storage';
 
 const axios = require('axios').default;
 
-export const axiosGithub = axios.create({
-    baseURL: 'https://api.github.com',
-    headers: {
-        Authorization: `token ${getGHToken()}`,
-        Accept: 'application/vnd.github.v3+json',
-    },
-});
+export function createAxios() {
+    return axios.create({
+        baseURL: 'https://api.github.com',
+        headers: {
+            Authorization: `token ${getGHToken()}`,
+            Accept: 'application/vnd.github.v3+json',
+        },
+    });
+}
 
 export function getNotifications(
     before: Date,
     since: Date,
     showAllCards: boolean,
 ) {
-    return axiosGithub.get('notifications', {
+    return createAxios().get('notifications', {
         params: {
             all: true,
             before: before,
